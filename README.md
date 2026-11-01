@@ -21,7 +21,7 @@ templates/
 | `empty` | general only | a truly empty project: README, `.gitignore`, `.editorconfig` and a `validate` that passes and says nothing is checked yet |
 | `dotnet-react` | general and .NET + React | a .NET 10 minimal API with a health endpoint and its xUnit test, a React 19 + Vite + TypeScript page with its Vitest test, `npm run setup` and `npm run validate` |
 
-A new profile adds a folder under `standards/` (when it has rules of its own) and under `templates/`.
+A new profile adds a folder under `standards/` (when it has rules of its own) and under `templates/`, and a line in `library.json`, which is what Buddy shows the owner when they choose a profile.
 
 ## Two kinds of standards
 

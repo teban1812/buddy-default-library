@@ -1,0 +1,14 @@
+trigger:
+  branches:
+    include: ['*']
+pr:
+  branches:
+    include: ['*']
+pool:
+  vmImage: ubuntu-latest
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: 22.x
+  - script: npm run validate
+    displayName: Validate

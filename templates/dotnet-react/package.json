@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "setup": "node setup.mjs",
-    "validate": "dotnet test BuddyApp.slnx && npm --prefix web test -- --run"
+    "validate": "dotnet test BuddyApp.slnx && npm --prefix web test -- --run",
+    "scan": "semgrep scan --config .semgrep --error --metrics off --exclude web/node_modules ."
   }
 }

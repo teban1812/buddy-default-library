@@ -1,0 +1,50 @@
+# The project's own Semgrep rules. They check standards that say "checked by a program".
+# Born with the project from Buddy's default library; the project's Standards Owner may change them.
+rules:
+  - id: nothing-fails-silently-csharp
+    languages: [csharp]
+    severity: ERROR
+    message: >-
+      An empty catch hides a failure: the user never learns that something went wrong (standard CRF-1, nothing fails silently).
+      Handle the error, tell the user, or let it propagate.
+    pattern-either:
+      - pattern: |
+          try { ... } catch { }
+      - pattern: |
+          try { ... } catch ($T $E) { }
+      - pattern: |
+          try { ... } catch ($T) { }
+  - id: nothing-fails-silently-typescript
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >-
+      An empty catch hides a failure: the user never learns that something went wrong (standard CRF-1, nothing fails silently).
+      Handle the error, tell the user, or let it propagate.
+    pattern-either:
+      - pattern: |
+          try { ... } catch ($E) { }
+      - pattern: |
+          try { ... } catch { }
+  - id: no-raw-sql-from-strings-csharp
+    languages: [csharp]
+    severity: ERROR
+    message: >-
+      SQL built by joining strings lets user input change the query (standard SEC-2, input is validated where it enters).
+      Use parameters.
+    pattern-either:
+      - pattern: |
+          new SqlCommand($"...", ...)
+      - pattern: |
+          new SqlCommand("..." + $X, ...)
+      - pattern: |
+          $DB.Database.ExecuteSqlRaw($"...", ...)
+      - pattern: |
+          $DB.Database.ExecuteSqlRaw("..." + $X, ...)
+  - id: no-html-from-strings-react
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >-
+      Injecting raw HTML lets content run as code in the user's browser (standard SEC-2).
+      Render text, or sanitise it first and say why it must be HTML.
+    pattern: |
+      <$EL dangerouslySetInnerHTML={...} />

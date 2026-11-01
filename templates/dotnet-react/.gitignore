@@ -1,0 +1,13 @@
+# .NET
+bin/
+obj/
+TestResults/
+.vs/
+*.user
+
+# Node / web
+node_modules/
+dist/
+coverage/
+*.local
+*.log

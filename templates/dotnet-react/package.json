@@ -2,7 +2,7 @@
   "name": "buddy-app",
   "private": true,
   "scripts": {
-    "setup": "npm --prefix web ci",
+    "setup": "node setup.mjs",
     "validate": "dotnet test BuddyApp.slnx && npm --prefix web test -- --run"
   }
 }

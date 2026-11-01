@@ -1,0 +1,7 @@
+{
+  "name": "buddy-app",
+  "private": true,
+  "scripts": {
+    "validate": "node -e \"console.log('No checks yet: the first change that adds code adds its tests here.')\""
+  }
+}

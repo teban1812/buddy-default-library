@@ -2,6 +2,8 @@
 
 The basic standards of a .NET + React application built with Buddy when there is no enterprise library. Few on purpose: each rule says how much freedom it leaves (`must` is fixed and a deviation needs the Standards Owner's decision; `prefer` is the default and a deviation is recorded as a decision; `free` is the builder's choice), how it is checked (a program first, then the independent reviewer, `declared` last) and the problem it prevents. A rule that cannot say these does not belong here.
 
+Confirmed by the Standards Owner on 2026-11-01.
+
 | Id | Zone | Rule | Checked by | Prevents |
 | :-- | :-- | :-- | :-- | :-- |
 | STK-1 | must | The backend is .NET 10 (the current long-term support release). | program: the projects' target framework | a mix of runtimes nobody supports |

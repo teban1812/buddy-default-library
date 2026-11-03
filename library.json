@@ -1,5 +1,7 @@
 {
   "name": "Buddy's default library",
+  "contract": 1,
+  "default_profile": "dotnet-react",
   "profiles": {
     "empty": "A truly empty project with the general standards only; the first change decides what to build and with what.",
     "dotnet-react": "A .NET 10 API and a React 19 + TypeScript web page, each with its first test, and the .NET + React standards."

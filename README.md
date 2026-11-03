@@ -38,3 +38,18 @@ Each rule states its zone (`must`, `prefer`, `free`), how it is checked (a progr
 ## Versions
 
 Versions are git tags (`v0.1.0`, …). A project records in `docs/standards/ORIGIN.md` the library, profile, version and commit it was created from.
+
+This library and Buddy publish their versions independently: Buddy reads a library at its latest version tag (or the one asked for), and the two agree only on the contract below.
+
+## Contract 1
+
+What Buddy assumes of a library, and so what any library, this one or an enterprise one, keeps. A library says which contract it follows in its `library.json` (`"contract": 1`; a library that says nothing follows contract 1), and a Buddy that does not understand that number refuses the library and says a newer Buddy is needed. Changes to a contract are additive: something a library may add and an older Buddy ignores. Anything that would break an older Buddy or an older library is a new contract, with a new number.
+
+- **`library.json`** at the root: `name` (one line), `contract` (a whole number), `default_profile` (the profile used when none is asked for; without it Buddy uses `dotnet-react`) and `profiles` (an object: each profile's name and the one line shown to the owner when they choose). `general` is never a profile.
+- **`standards/general/`**: the standards every profile receives, copied to the project's `docs/standards/general/`. The name `general` is fixed.
+- **`standards/<profile>/`**: a profile's own standards, copied to `docs/standards/<profile>/`. Optional when the profile has a template.
+- **`templates/<profile>/`**: the application a new project starts from, copied to the project's root without the library's history. Optional when the profile has standards.
+- **Placeholders**: `BuddyApp` (PascalCase, a valid C# identifier) and `buddy-app` (kebab-case), in the template's file names and text contents, are replaced by the project's name.
+- **Pipelines**: at most one per host, in the template: `.github/workflows/` (GitHub Actions) and `azure-pipelines.yml` at its root (Azure Pipelines). The project keeps only the chosen host's.
+- **Scripts** in the template's `package.json`: `setup` (optional; run once when the project is born), `validate` (the project's checks; run when the project is born and before each change is presented) and `scan` (optional; the project's own scanning rules, run once per change).
+- **`CLAUDE.md`** in the template (optional): kept, with Buddy's own block put first.

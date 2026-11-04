@@ -4,6 +4,8 @@ obj/
 TestResults/
 .vs/
 *.user
+# validate builds here, apart from bin/ and obj/, so it runs while `dotnet run` holds them
+.artifacts/
 
 # Node / web
 node_modules/

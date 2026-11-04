@@ -13,5 +13,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
+    // Above the 5 s asyncUtilTimeout of src/test/setup.ts, so a findBy* that waits in vain reports what it missed.
+    testTimeout: 10000,
   },
 })

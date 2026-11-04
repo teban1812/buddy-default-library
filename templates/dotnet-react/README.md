@@ -15,6 +15,9 @@ npm run setup      # installs the web dependencies (npm ci in web/)
 npm run validate   # runs the .NET tests, then the web tests
 ```
 
+`validate` builds the .NET projects into `.artifacts/validate/`, apart from their `bin/` and `obj/`, so it runs
+while the API is up with `dotnet run`.
+
 ## Run in development
 
 In one terminal, start the API on http://localhost:5080:

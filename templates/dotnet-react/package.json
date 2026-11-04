@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "setup": "node setup.mjs",
-    "validate": "dotnet test BuddyApp.slnx && npm --prefix web test -- --run",
-    "scan": "semgrep scan --config .semgrep --error --metrics off --exclude web/node_modules ."
+    "validate": "dotnet test BuddyApp.slnx --artifacts-path .artifacts/validate && npm --prefix web test -- --run",
+    "scan": "semgrep scan --config .semgrep --error --metrics off --exclude web/node_modules --exclude .artifacts ."
   }
 }

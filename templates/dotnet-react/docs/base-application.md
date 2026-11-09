@@ -1,4 +1,6 @@
-# buddy-app
+# The base application
+
+What the project was born with, from the default library's profile dotnet-react. The project's own README says what it is for.
 
 A .NET 10 minimal API (`src/BuddyApp.Api`) with xUnit tests (`tests/BuddyApp.Api.Tests`)
 and a React + Vite + TypeScript web app (`web/`) tested with Vitest and Testing Library.

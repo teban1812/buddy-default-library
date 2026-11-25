@@ -1,4 +1,4 @@
-/* Vercel: pure black and white with sharp contrast, the most legible and sober. */
+/* Mono contrast: pure black and white with sharp contrast, the most legible and sober. */
 :root {
   --background: oklch(0.99 0 0);
   --foreground: oklch(0 0 0);

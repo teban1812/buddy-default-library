@@ -7,7 +7,7 @@ The standards and base applications a project starts from when it is created wit
 ```text
 library.json      the library's name, contract, default profile and profiles
 standards/
-  general/        the rules every project follows, whatever its stack (evergreen)
+  general/        the rules every project follows, whatever its stack (evergreen): standards.md and design.md
   <profile>/      the rules of one stack (born with the project)
 templates/
   <profile>/      the application a new project starts from
@@ -29,7 +29,7 @@ Each template also carries the project's own scanning rules: `.gitleaks.toml` (s
 | Profile | Standards | Template |
 | :-- | :-- | :-- |
 | `empty` | general only | a truly empty project: `docs/base-application.md`, `.gitignore`, `.editorconfig` and a `validate` that passes and says nothing is checked yet |
-| `dotnet-react` | general and .NET + React | a .NET 10 minimal API with a health endpoint and its xUnit test, a React 19 + Vite + TypeScript page with Tailwind CSS v4, shadcn/ui and the project's theme, and its Vitest test, `npm run setup` and `npm run validate` |
+| `dotnet-react` | general and .NET + React | a .NET 10 minimal API with a health endpoint and its xUnit test, a React 19 + Vite + TypeScript page with Tailwind CSS v4, shadcn/ui and the project's theme, its Vitest tests (an axe accessibility test among them), `npm run setup` and `npm run validate` |
 
 A new profile adds a folder under `standards/` (when it has rules of its own) and under `templates/`, and a line in `library.json`, which is what Buddy shows the owner when they choose a profile.
 
@@ -50,6 +50,10 @@ A new profile adds a folder under `standards/` (when it has rules of its own) an
 The web app also ships a light/dark mode switch (a button that toggles the `.dark` class, remembers the choice in `localStorage` and starts from the system preference), TanStack Query as the pattern for server data (the health check is a `useQuery`) and Lucide as the icon library.
 
 A project born from the `dotnet-react` profile applies its theme in `web/src/theme.css` (born as `neutral`). `web/src/index.css` imports it and maps its variables to Tailwind, so every screen and every shadcn component uses it. When the owner chooses a theme, Buddy replaces the content of `web/src/theme.css` with the chosen one from `docs/design/themes/`; nothing else changes. To adjust a theme, the owner can use the [tweakcn editor](https://tweakcn.com) as an optional aid and paste the CSS it produces over `theme.css`; the project does not depend on it.
+
+## Design rules
+
+`standards/general/design.md` holds the library's design rules in the same table as any standard: contrast, keyboard, forms, target size and reflow (`must`), and theme tokens only, states and feedback and consistency (`prefer`), each from a WCAG 2.2 criterion or a usability heuristic. A profile may add a `design.md` of its own. Dev, the reviewer, the usability audit and discovery read them as any standard. In the `dotnet-react` template, `src/App.a11y.test.tsx` runs axe-core over the rendered page in light and dark mode; jsdom cannot compute colours, so contrast stays the reviewer's in unit tests.
 
 ## Two kinds of standards
 

@@ -47,6 +47,8 @@ A new profile adds a folder under `standards/` (when it has rules of its own) an
 
 `neutral` is shadcn/ui's (MIT); the other four are copies of presets of [tweakcn](https://github.com/jnsahaj/tweakcn) (Apache-2.0), converted to CSS. `themes/NOTICE` carries both licence notices. Nothing is fetched from tweakcn at any time: the files are copies.
 
+The web app also ships a light/dark mode switch (a button that toggles the `.dark` class, remembers the choice in `localStorage` and starts from the system preference), TanStack Query as the pattern for server data (the health check is a `useQuery`) and Lucide as the icon library.
+
 A project born from the `dotnet-react` profile applies its theme in `web/src/theme.css` (born as `neutral`). `web/src/index.css` imports it and maps its variables to Tailwind, so every screen and every shadcn component uses it. When the owner chooses a theme, Buddy replaces the content of `web/src/theme.css` with the chosen one from `docs/design/themes/`; nothing else changes. To adjust a theme, the owner can use the [tweakcn editor](https://tweakcn.com) as an optional aid and paste the CSS it produces over `theme.css`; the project does not depend on it.
 
 ## Two kinds of standards

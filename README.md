@@ -11,6 +11,7 @@ standards/
   <profile>/      the rules of one stack (born with the project)
 templates/
   <profile>/      the application a new project starts from
+themes/           the colour themes the owner chooses from (contract 2; see Themes below)
 questions/        asked before a project is born (contract 2; none here yet)
 steps/            checklists drafted once per project (contract 2; none here yet)
 normative/        the index of the documents the standards cite (contract 2; none here yet)
@@ -28,9 +29,25 @@ Each template also carries the project's own scanning rules: `.gitleaks.toml` (s
 | Profile | Standards | Template |
 | :-- | :-- | :-- |
 | `empty` | general only | a truly empty project: `docs/base-application.md`, `.gitignore`, `.editorconfig` and a `validate` that passes and says nothing is checked yet |
-| `dotnet-react` | general and .NET + React | a .NET 10 minimal API with a health endpoint and its xUnit test, a React 19 + Vite + TypeScript page with its Vitest test, `npm run setup` and `npm run validate` |
+| `dotnet-react` | general and .NET + React | a .NET 10 minimal API with a health endpoint and its xUnit test, a React 19 + Vite + TypeScript page with Tailwind CSS v4, shadcn/ui and the project's theme, and its Vitest test, `npm run setup` and `npm run validate` |
 
 A new profile adds a folder under `standards/` (when it has rules of its own) and under `templates/`, and a line in `library.json`, which is what Buddy shows the owner when they choose a profile.
+
+## Themes
+
+`themes/` holds the colour themes the owner can choose from when the project's look is decided (contract 2, optional). Each is one `<name>.css` of shadcn's CSS variables (`:root` for light, `.dark` for dark: `--background`, `--primary`, `--radius`, `--chart-*`, `--sidebar-*`, fonts when given), with its name and a one-line description in a comment at the top. `buddy init` copies them to the project's `docs/design/themes/`.
+
+| Theme | Look |
+| :-- | :-- |
+| `neutral` | shadcn's default: black and white with grey accents |
+| `modern-minimal` | clean white screens with a corporate blue accent |
+| `caffeine` | warm browns and cream |
+| `nature` | soft greens on warm paper tones |
+| `vercel` | pure black and white, the highest contrast |
+
+`neutral` is shadcn/ui's (MIT); the other four are copies of presets of [tweakcn](https://github.com/jnsahaj/tweakcn) (Apache-2.0), converted to CSS. `themes/NOTICE` carries both licence notices. Nothing is fetched from tweakcn at any time: the files are copies.
+
+A project born from the `dotnet-react` profile applies its theme in `web/src/theme.css` (born as `neutral`). `web/src/index.css` imports it and maps its variables to Tailwind, so every screen and every shadcn component uses it. When the owner chooses a theme, Buddy replaces the content of `web/src/theme.css` with the chosen one from `docs/design/themes/`; nothing else changes. To adjust a theme, the owner can use the [tweakcn editor](https://tweakcn.com) as an optional aid and paste the CSS it produces over `theme.css`; the project does not depend on it.
 
 ## Two kinds of standards
 
@@ -50,4 +67,4 @@ This library and Buddy publish their versions independently: Buddy reads a libra
 
 What Buddy assumes of a library, this one or an enterprise one, is written once, in Buddy's repository: [the library guide](https://github.com/teban1812/buddy/blob/main/core/LIBRARY-GUIDE.md) (`core/LIBRARY-GUIDE.md` in teban1812/buddy, also shipped with Buddy's plugin). It explains each part of a library (`library.json`, the standards and their open values, the templates, the questions, the steps with each template's prefill, the normative documents and the saved prompts), what Buddy does with each and what he refuses, with an example of each.
 
-A library says which contract it follows in its `library.json`. This library follows contract 1: its standards and templates. Contract 2 adds the questions, the steps, the normative documents and the saved prompts; a library that uses any of them declares `"contract": 2`.
+A library says which contract it follows in its `library.json`. This library follows contract 2: its standards and templates, and the themes. Contract 2 adds the themes, the questions, the steps, the normative documents and the saved prompts; a library that uses any of them declares `"contract": 2`.

@@ -4,11 +4,12 @@ neutral.css
   The default "neutral" theme of shadcn/ui (https://ui.shadcn.com/docs/theming).
   Copyright (c) 2023 shadcn. MIT License (https://github.com/shadcn-ui/ui/blob/main/LICENSE.md).
 
-modern-minimal.css, caffeine.css, nature.css, vercel.css
+modern-minimal.css, caffeine.css, nature.css, mono-contrast.css
   Converted to plain CSS variables from the theme presets of tweakcn
   (https://github.com/jnsahaj/tweakcn, file utils/theme-presets.ts, presets
-  "modern-minimal", "caffeine", "nature" and "vercel"; the "vercel" preset
-  imitates a look, it is not made by or endorsed by Vercel).
+  "modern-minimal", "caffeine", "nature" and, for mono-contrast.css, the
+  preset with the id "vercel"; renamed here, it is not made by or endorsed
+  by any company).
   Copyright tweakcn contributors. Licensed under the Apache License, Version 2.0;
   you may not use these files except in compliance with the License. You may obtain
   a copy of the License at

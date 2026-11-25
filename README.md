@@ -43,7 +43,7 @@ A new profile adds a folder under `standards/` (when it has rules of its own) an
 | `modern-minimal` | clean white screens with a corporate blue accent |
 | `caffeine` | warm browns and cream |
 | `nature` | soft greens on warm paper tones |
-| `vercel` | pure black and white, the highest contrast |
+| `mono-contrast` | pure black and white, the highest contrast |
 
 `neutral` is shadcn/ui's (MIT); the other four are copies of presets of [tweakcn](https://github.com/jnsahaj/tweakcn) (Apache-2.0), converted to CSS. `themes/NOTICE` carries both licence notices. Nothing is fetched from tweakcn at any time: the files are copies.
 

@@ -49,7 +49,7 @@ A new profile adds a folder under `standards/` (when it has rules of its own) an
 | `clean-slate` | cool slate greys with an indigo accent |
 | `northern-lights` | forest green and northern-sky blue |
 
-`neutral` is shadcn/ui's (MIT); the others are copies of presets of [tweakcn](https://github.com/jnsahaj/tweakcn) (Apache-2.0), converted to CSS; in `amethyst-haze`, `ocean-breeze`, `clean-slate` and `northern-lights` the colours below WCAG AA contrast were adjusted, keeping their hue. `themes/NOTICE` carries both licence notices. Nothing is fetched from tweakcn at any time: the files are copies.
+`neutral` is shadcn/ui's (MIT); the others are copies of presets of [tweakcn](https://github.com/jnsahaj/tweakcn) (Apache-2.0), converted to CSS. In every theme the colours below WCAG AA contrast were adjusted, keeping their hue: text reaches 4.5:1 on its background and the primary colour 3:1, in light and dark. `themes/NOTICE` carries both licence notices. Nothing is fetched from tweakcn at any time: the files are copies.
 
 The web app also ships a light/dark mode switch (a button that toggles the `.dark` class, remembers the choice in `localStorage` and starts from the system preference), TanStack Query as the pattern for server data (the health check is a `useQuery`) and Lucide as the icon library.
 

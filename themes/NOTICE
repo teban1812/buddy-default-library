@@ -2,6 +2,7 @@ Third-party notices for the themes in this folder.
 
 neutral.css
   The default "neutral" theme of shadcn/ui (https://ui.shadcn.com/docs/theming).
+  Modified: its muted text in light mode is slightly darker, to reach WCAG AA.
   Copyright (c) 2023 shadcn. MIT License (https://github.com/shadcn-ui/ui/blob/main/LICENSE.md).
 
 modern-minimal.css, caffeine.css, nature.css, mono-contrast.css,
@@ -11,8 +12,8 @@ amethyst-haze.css, ocean-breeze.css, clean-slate.css, northern-lights.css
   "modern-minimal", "caffeine", "nature", "amethyst-haze", "ocean-breeze",
   "clean-slate", "northern-lights" and, for mono-contrast.css, the preset
   with the id "vercel"; renamed here, it is not made by or endorsed by any
-  company). The last four are modified: colours that fell below WCAG AA
-  contrast were darkened or lightened, keeping their hue, until they pass.
+  company). All are modified: colours that fell below WCAG AA contrast
+  were darkened or lightened, keeping their hue, until they pass.
   Copyright tweakcn contributors. Licensed under the Apache License, Version 2.0;
   you may not use these files except in compliance with the License. You may obtain
   a copy of the License at

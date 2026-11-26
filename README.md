@@ -5,7 +5,7 @@ The standards and base applications a project starts from when it is created wit
 ## Layout
 
 ```text
-library.json      the library's name, contract, default profile and profiles
+library.json      the library's name, contract, default profile, profiles and their default quality goals
 standards/
   general/        the rules every project follows, whatever its stack (evergreen): standards.md and design.md
   <profile>/      the rules of one stack (born with the project)
@@ -32,6 +32,8 @@ Each template also carries the project's own scanning rules: `.gitleaks.toml` (s
 | `dotnet-react` | general and .NET + React | a .NET 10 minimal API with a health endpoint and its xUnit test, a React 19 + Vite + TypeScript page with Tailwind CSS v4, shadcn/ui and the project's theme, its Vitest tests (an axe accessibility test among them), `npm run setup` and `npm run validate` |
 
 A new profile adds a folder under `standards/` (when it has rules of its own) and under `templates/`, and a line in `library.json`, which is what Buddy shows the owner when they choose a profile.
+
+`library.json` also proposes default **quality goals** for `dotnet-react` (`quality_goals`, contract 2, optional): up to 50 people at the same time, 95 % of pages in under 2 seconds, at most 4 hours down a month outside office hours, data kept 5 years, and WCAG 2.2 AA. They are a starting point, never copied: Buddy proposes those the project's risk justifies, adjusted to it, and the owner confirms them into the project's business context, where UAT reads what it measures. An older Buddy ignores the key.
 
 ## Themes
 
@@ -77,4 +79,4 @@ This library and Buddy publish their versions independently: Buddy reads a libra
 
 What Buddy assumes of a library, this one or an enterprise one, is written once, in Buddy's repository: [the library guide](https://github.com/teban1812/buddy/blob/main/core/LIBRARY-GUIDE.md) (`core/LIBRARY-GUIDE.md` in teban1812/buddy, also shipped with Buddy's plugin). It explains each part of a library (`library.json`, the standards and their open values, the templates, the questions, the steps with each template's prefill, the normative documents and the saved prompts), what Buddy does with each and what he refuses, with an example of each.
 
-A library says which contract it follows in its `library.json`. This library follows contract 2: its standards and templates, and the themes. Contract 2 adds the themes, the questions, the steps, the normative documents and the saved prompts; a library that uses any of them declares `"contract": 2`.
+A library says which contract it follows in its `library.json`. This library follows contract 2: its standards and templates, the themes and the default quality goals. Contract 2 adds the themes, the questions, the steps, the normative documents, the saved prompts and the default quality goals; a library that uses any of them declares `"contract": 2`.

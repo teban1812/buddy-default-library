@@ -44,8 +44,12 @@ A new profile adds a folder under `standards/` (when it has rules of its own) an
 | `caffeine` | warm browns and cream |
 | `nature` | soft greens on warm paper tones |
 | `mono-contrast` | pure black and white, the highest contrast |
+| `amethyst-haze` | soft lavender and rose on pale grey |
+| `ocean-breeze` | fresh greens on a pale sky blue |
+| `clean-slate` | cool slate greys with an indigo accent |
+| `northern-lights` | forest green and northern-sky blue |
 
-`neutral` is shadcn/ui's (MIT); the other four are copies of presets of [tweakcn](https://github.com/jnsahaj/tweakcn) (Apache-2.0), converted to CSS. `themes/NOTICE` carries both licence notices. Nothing is fetched from tweakcn at any time: the files are copies.
+`neutral` is shadcn/ui's (MIT); the others are copies of presets of [tweakcn](https://github.com/jnsahaj/tweakcn) (Apache-2.0), converted to CSS; in `amethyst-haze`, `ocean-breeze`, `clean-slate` and `northern-lights` the colours below WCAG AA contrast were adjusted, keeping their hue. `themes/NOTICE` carries both licence notices. Nothing is fetched from tweakcn at any time: the files are copies.
 
 The web app also ships a light/dark mode switch (a button that toggles the `.dark` class, remembers the choice in `localStorage` and starts from the system preference), TanStack Query as the pattern for server data (the health check is a `useQuery`) and Lucide as the icon library.
 
@@ -53,7 +57,7 @@ A project born from the `dotnet-react` profile applies its theme in `web/src/the
 
 ## Design rules
 
-`standards/general/design.md` holds the library's design rules in the same table as any standard: contrast, keyboard, forms, target size and reflow (`must`), and theme tokens only, states and feedback and consistency (`prefer`), each from a WCAG 2.2 criterion or a usability heuristic. A profile may add a `design.md` of its own. Dev, the reviewer, the usability audit and discovery read them as any standard. In the `dotnet-react` template, `src/App.a11y.test.tsx` runs axe-core over the rendered page in light and dark mode; jsdom cannot compute colours, so contrast stays the reviewer's in unit tests.
+`standards/general/design.md` holds the library's design rules in the same table as any standard (contrast, keyboard, forms, target size, reflow, colour never the only signal and dialogs are `must`; theme tokens, states, actions, navigation, tables, fonts and consistency are `prefer`), each from a WCAG 2.2 criterion or a usability heuristic, and the rules for prototypes (believable sample data, at least two roles, the prototype's scaffolding set apart). A profile may add a `design.md` of its own. Dev, the reviewer, the usability audit and discovery read them as any standard. In the `dotnet-react` template, `src/App.a11y.test.tsx` runs axe-core over the rendered page in light and dark mode; jsdom cannot compute colours, so contrast stays the reviewer's in unit tests.
 
 ## Two kinds of standards
 

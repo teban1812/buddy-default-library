@@ -9,8 +9,8 @@ function initialDark() {
   try {
     const stored = localStorage.getItem(KEY)
     if (stored) return stored === 'dark'
-  } catch {
-    // storage blocked: fall back to the system preference
+  } catch (error) {
+    console.warn('The light/dark choice cannot be read; the system preference is used.', error)
   }
   return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false
 }
@@ -28,8 +28,8 @@ export function ModeToggle() {
     document.documentElement.classList.toggle('dark', next)
     try {
       localStorage.setItem(KEY, next ? 'dark' : 'light')
-    } catch {
-      // storage blocked: the choice lasts until the page is closed
+    } catch (error) {
+      console.warn('The light/dark choice cannot be kept; it lasts until the page is closed.', error)
     }
   }
 

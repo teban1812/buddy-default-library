@@ -37,8 +37,8 @@ git add .personal-data-allow.json tests/BuddyApp.Api.Tests/<file>
 The architecture rules are tests (TST-3 in `docs/standards/`), run with the other .NET tests in `npm run validate`:
 
 - `tests/BuddyApp.Api.Tests/EndpointSecurityTests.cs` starts the application and reads every endpoint it serves. An endpoint
-  that answers without permission must be on the approved list at the top of that file (only `GET /api/health` today);
-  any other fails the test, named with its method and route. It also checks that an unauthenticated call outside the list
+  that answers without permission must be on the approved list at the top of that file (`GET /api/health`, and the stub
+  sign-in described below); any other fails the test, named with its method and route. It also checks that an unauthenticated call outside the list
   gets 401 and that every response carries the security headers.
 - `tests/BuddyApp.Api.Tests/ArchitectureTests.cs` reads the compiled code with [ArchUnitNET](https://github.com/TNG/ArchUnitNET)
   (Apache 2.0, a test dependency only, pinned to 0.13.5): the API must not depend on the tests or on test libraries
@@ -47,9 +47,32 @@ The architecture rules are tests (TST-3 in `docs/standards/`), run with the othe
 
 What the tests guard is in `src/BuddyApp.Api/Program.cs`: every endpoint asks for a signed-in user unless it says
 `AllowAnonymous()` (a fallback authorization policy), the session is a cookie (`HttpOnly`, `Secure`, `SameSite`) and an
-unauthenticated call gets 401 rather than a redirect, and a small middleware sets the security headers. There is no sign-in
-yet: it arrives with the first feature that needs one (SEC-5). A new endpoint is protected by default; to open one, add
-`AllowAnonymous()` and its line to the approved list in the same change.
+unauthenticated call gets 401 rather than a redirect, and a small middleware sets the security headers. A new endpoint is
+protected by default; to open one, add `AllowAnonymous()` and its line to the approved list in the same change.
+
+## Sign-in
+
+Until the project has a real identity provider, it has a stub sign-in for development (SEC-6 in `docs/standards/`), so the
+work does not wait for one. `POST /api/dev/sign-in` (`src/BuddyApp.Api/StubSignIn.cs`) signs in a made-up user, Dev User
+(`dev@example.com`, role `Member`), into the same session cookie a real provider will use; `GET /api/me` answers who is
+signed in, and 401 to anyone who is not. `Program.cs` maps the stub only when the environment is `Development` (as
+`dotnet run` sets it); in any other environment, a test environment or production, it does not exist and every protected
+call without a real session gets 401. `tests/BuddyApp.Api.Tests/StubSignInTests.cs` starts the application in `Production`
+and in `Staging` and fails if the stub is there, and checks that in `Development` the stub user gets through a protected call.
+The approved list in `EndpointSecurityTests.cs` carries the stub's line because those tests run in `Development`.
+
+To try it with the API running (below):
+
+```sh
+curl -i -c cookies.txt -X POST http://localhost:5080/api/dev/sign-in   # 204, and the session cookie
+curl -i -b cookies.txt http://localhost:5080/api/me                    # 200 with Dev User; without -b, 401
+```
+
+A real provider (Entra ID, say, through OpenID Connect in the API, as SEC-5 asks) replaces the stub without touching the
+rest: add the provider as the challenge scheme that signs into the same cookie, delete `StubSignIn.cs`, the lines in
+`Program.cs` that map it, its line on the approved list and the Development test in `StubSignInTests.cs`; the tests that it
+is absent outside Development can stay, guarding that it never comes back. The cookie, the fallback policy, the endpoints and
+the tests that guard them stay as they are.
 
 ## Test data
 

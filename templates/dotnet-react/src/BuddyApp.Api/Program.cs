@@ -1,10 +1,11 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // The session travels in an HttpOnly, Secure, SameSite cookie (SEC-4). An API answers 401 and 403 instead of
-// redirecting to a sign-in page; the sign-in itself arrives with the first feature that needs it (SEC-5).
+// redirecting to a sign-in page. Until a real provider arrives (SEC-5), the stub sign-in fills this cookie in Development.
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -45,6 +46,20 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGet("/api/health", () => Results.Ok(new { status = "ok" })).AllowAnonymous();
+
+// Who is signed in; protected by the fallback policy like every endpoint not on the approved list.
+app.MapGet("/api/me", (ClaimsPrincipal user) => Results.Ok(new
+{
+    name = user.FindFirstValue(ClaimTypes.Name),
+    email = user.FindFirstValue(ClaimTypes.Email),
+    roles = user.FindAll(ClaimTypes.Role).Select(c => c.Value),
+}));
+
+// The stub sign-in exists only in Development (SEC-6); StubSignInTests fails if it is registered anywhere else.
+if (app.Environment.IsDevelopment())
+{
+    app.MapStubSignIn();
+}
 
 app.Run();
 

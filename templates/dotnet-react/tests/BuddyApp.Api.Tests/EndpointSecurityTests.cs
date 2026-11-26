@@ -17,6 +17,8 @@ public class EndpointSecurityTests(WebApplicationFactory<Program> factory)
     private static readonly HashSet<string> ApprovedAnonymous =
     [
         "GET /api/health",
+        // The stub sign-in, mapped only in Development (these tests run there); StubSignInTests proves it is absent elsewhere.
+        "POST /api/dev/sign-in",
     ];
 
     // The headers the security middleware in Program.cs sets on every response, with their values.

@@ -26,6 +26,7 @@ A web application for Cloudflare Pages: a React 19 + Vite + TypeScript page (`sr
 
 - Node.js 24 or later (with `node:sqlite`) and npm.
 - Wrangler, Cloudflare's command line, comes with the project as a development dependency; no global install and no Cloudflare account are needed to develop and test.
+- Semgrep and gitleaks, for the project's scans. Each tool, with the command that checks it, its minimum version and how to install it on Windows and on Mac, is in `docs/standards/cloudflare-web/prerequisites.md`.
 
 ## Setup and validation
 

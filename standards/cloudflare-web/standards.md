@@ -10,9 +10,7 @@ The zones, checks, how the Product Owner departs from a rule and the treatment o
 
 Harvested from what a trial project built on Cloudflare followed; not yet confirmed by a Standards Owner.
 
-## Prerequisites
-
-To develop and test: Node.js 24 or later (its `node:sqlite` runs the tests against D1 in memory) and npm. Wrangler, Cloudflare's command line, comes with the project as a development dependency, pinned by its lock file. No Cloudflare account is needed until the project decides to publish.
+What a machine needs to build and test the project (Node.js 24 or later, Semgrep, gitleaks), with how to check and install each, is in `prerequisites.md`.
 
 | Id | Zone | Rule | Checked by | Prevents |
 | :-- | :-- | :-- | :-- | :-- |

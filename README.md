@@ -8,7 +8,7 @@ The standards and base applications a project starts from when it is created wit
 library.json      the library's name, contract, default profile and profiles
 standards/
   general/        the rules every project follows, whatever its stack (evergreen): standards.md and design.md, the Definition of Ready and of Done (definition-of-ready.md, definition-of-done.md), and the quality goals proposed to every project (quality-goals.md)
-  <profile>/      the rules of one stack (born with the project), its own rows of the Definition of Done (definition-of-done.md, evergreen) and the quality goals proposed for it (quality-goals.md, evergreen)
+  <profile>/      the rules of one stack (born with the project), its own rows of the Definition of Done (definition-of-done.md, evergreen), the quality goals proposed for it (quality-goals.md, evergreen) and what a machine needs to build it (prerequisites.md, born with the project)
 templates/
   <profile>/      the application a new project starts from
 themes/           the colour themes the owner chooses from (contract 2; see Themes below)
@@ -36,7 +36,7 @@ Each template with code also scans for personal data (SEC-8 in the general stand
 
 Test data is invented and the same on every run (QLT-4 in the general standards): each template with code has a test-data builder with a fixed seed and a test that fails if the seed stops giving the same data.
 
-Each profile's prerequisites, what a machine needs to build and test it, are in its `docs/base-application.md` (and, for `cloudflare-web`, at the top of its standards): `dotnet-react` needs the .NET 10 SDK and Node.js 24; `cloudflare-web` needs Node.js 24 or later and npm, and brings Wrangler as a development dependency, so no Cloudflare account is needed until the project decides to publish.
+Each profile declares its **prerequisites**, what a machine needs to build and test it, in `standards/<profile>/prerequisites.md` (born with the project): a table with each tool, the command that checks it, its minimum version, its winget id for Windows and its Homebrew formula or cask for Mac, and what it is needed for. `dotnet-react` needs the .NET 10 SDK, Node.js 24, Semgrep and gitleaks; `cloudflare-web` needs Node.js 24 or later, Semgrep and gitleaks, and brings Wrangler as a development dependency, so no Cloudflare account is needed until the project decides to publish. Buddy reads the chosen profile's table before the project is born, checks the machine and installs what is missing only with the owner's yes.
 
 A new profile adds a folder under `standards/` (when it has rules of its own) and under `templates/`, and a line in `library.json`, which is what Buddy shows the owner when they choose a profile.
 

@@ -9,6 +9,7 @@ and a React + Vite + TypeScript web app (`web/`) tested with Vitest and Testing 
 
 - .NET SDK 10
 - Node.js 24 and npm
+- Semgrep and gitleaks, for the project's scans. Each tool, with the command that checks it, its minimum version and how to install it on Windows and on Mac, is in `docs/standards/dotnet-react/prerequisites.md`.
 
 ## Setup and validation
 

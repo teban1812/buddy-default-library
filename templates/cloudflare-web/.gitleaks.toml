@@ -1,0 +1,14 @@
+# The project's secret-scanning rules: gitleaks' own rules plus the project's.
+# Born with the project from Buddy's default library (standard SEC-1, no secret in the repository).
+[extend]
+useDefault = true
+
+[[rules]]
+id = "connection-string-password"
+description = "A password written in a connection string (standard SEC-1): it belongs in the environment or a secrets store"
+regex = '''(?i)\b(?:password|pwd)\s*=\s*([^;'"\s]{6,})'''
+secretGroup = 1
+keywords = ["password", "pwd"]
+
+[[rules.allowlists]]
+regexes = ['''(?i)^\{?\$?\{[^}]+\}\}?$''', '''(?i)^(?:<[^>]+>|\*+|changeme|yourpassword|password)$''']

@@ -1,0 +1,13 @@
+# Cloudflare Pages: the site (dist/) and its Functions (functions/), with one D1 database bound as DB.
+# Local only: `npm run dev:pages` and the db:*:local scripts use a database Wrangler keeps in .wrangler/.
+# Deployment is not configured. Publishing needs a Cloudflare account, a real D1 database whose id replaces
+# database_id below, and the project's own decision on where and how it is published.
+name = "buddy-app"
+compatibility_date = "2026-11-26"
+pages_build_output_dir = "dist"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "buddy-app-db"
+database_id = "local-buddy-app-db"
+migrations_dir = "migrations"

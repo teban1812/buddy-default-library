@@ -1,0 +1,10 @@
+# Node
+node_modules/
+dist/
+coverage/
+*.local
+*.log
+
+# Wrangler: the local D1 database and the local secrets (never committed, standard SEC-1)
+.wrangler/
+.dev.vars

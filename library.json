@@ -4,7 +4,8 @@
   "default_profile": "dotnet-react",
   "profiles": {
     "empty": "A truly empty project with the general standards only; the first change decides what to build and with what.",
-    "dotnet-react": "A .NET 10 API and a React 19 + TypeScript web page with Tailwind and shadcn/ui, each with its first test, and the .NET + React standards."
+    "dotnet-react": "A .NET 10 API and a React 19 + TypeScript web page with Tailwind and shadcn/ui, each with its first test, and the .NET + React standards.",
+    "cloudflare-web": "A web application on Cloudflare Pages: a React 19 + TypeScript page with Tailwind, Pages Functions with a sign-in and two roles, a D1 database with its first migration and a sample seed, its Vitest tests, and the Cloudflare standards; deployment is left to the project."
   },
   "quality_goals": {
     "dotnet-react": [
@@ -19,6 +20,28 @@
       {
         "goal": "Time it may be down",
         "target": "at most 4 hours a month, outside office hours"
+      },
+      {
+        "goal": "How long its data is kept",
+        "target": "5 years, then deleted or archived"
+      },
+      {
+        "goal": "Accessibility",
+        "target": "WCAG 2.2 AA on every screen"
+      }
+    ],
+    "cloudflare-web": [
+      {
+        "goal": "People using it at the same time",
+        "target": "up to 50"
+      },
+      {
+        "goal": "Time a page takes to answer",
+        "target": "95 % of pages in under 2 seconds"
+      },
+      {
+        "goal": "Time it may be down",
+        "target": "at most 4 hours a month"
       },
       {
         "goal": "How long its data is kept",

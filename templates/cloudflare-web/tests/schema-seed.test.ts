@@ -21,6 +21,9 @@ describe('the D1 schema and the seed', () => {
       .prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name")
       .all<{ name: string }>();
     expect(results.map((r) => r.name)).toEqual(expect.arrayContaining(['sessions', 'sign_in_attempts', 'users']));
+    const columns = await db.prepare('PRAGMA table_info(sign_in_attempts)').all<{ name: string; pk: number }>();
+    const key = columns.results.filter((c) => c.pk > 0).map((c) => c.name);
+    expect(key).toEqual(['address', 'email']);
   });
 
   it('seeds one account per role, with hashed passwords and no broken reference', async () => {

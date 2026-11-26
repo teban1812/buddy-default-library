@@ -22,12 +22,12 @@ function context(db: SqliteD1Database, request: Request): PagesContext<{ user?: 
   };
 }
 
-function loginRequest(body: unknown, origin = 'http://localhost'): Request {
-  return new Request(`${origin}/api/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
+// Cloudflare puts the network address the request came from in CF-Connecting-IP; without it (a local test),
+// the sign-in counts the request under one fixed address.
+function loginRequest(body: unknown, origin = 'http://localhost', address?: string): Request {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (address) headers['CF-Connecting-IP'] = address;
+  return new Request(`${origin}/api/auth/login`, { method: 'POST', headers, body: JSON.stringify(body) });
 }
 
 function cookiePair(setCookie: string | null): string {
@@ -100,9 +100,13 @@ describe('sign-in and the session', () => {
   });
 });
 
-// R307: 5 failed sign-ins for the same account within 15 minutes make that account's sign-in wait 15 minutes.
+// R307, R309, R310: 5 failed sign-ins for the same email from the same network address within 15 minutes make
+// that email wait 15 minutes from that address; 20 failures from one address, whatever the email, make that
+// address wait 15 minutes.
 describe('the limit on failed sign-ins', () => {
   const MINUTE = 60 * 1000;
+  const HOME = '198.51.100.7';
+  const ELSEWHERE = '203.0.113.20';
   const WRONG = { email: ADMIN.email, password: 'not-the-password' };
   let db: SqliteD1Database;
   beforeEach(() => {
@@ -115,15 +119,18 @@ describe('the limit on failed sign-ins', () => {
     db.close();
   });
 
-  async function attempt(body: { email: string; password: string }): Promise<{ status: number; error?: string }> {
-    const res = await loginPost(context(db, loginRequest(body)));
+  async function attempt(
+    body: { email: string; password: string },
+    address = HOME,
+  ): Promise<{ status: number; error?: string }> {
+    const res = await loginPost(context(db, loginRequest(body, 'http://localhost', address)));
     const payload = (await res.json()) as { error?: string };
     return { status: res.status, error: payload.error };
   }
 
-  async function failFiveTimes(email: string): Promise<void> {
+  async function failFiveTimes(email: string, address = HOME): Promise<void> {
     for (let i = 0; i < 5; i += 1) {
-      const res = await attempt({ email, password: 'not-the-password' });
+      const res = await attempt({ email, password: 'not-the-password' }, address);
       expect(res.status).toBe(401);
     }
   }
@@ -136,11 +143,42 @@ describe('the limit on failed sign-ins', () => {
     expect(sixth.error).toMatch(/wait 15 minutes/i);
   });
 
-  it('refuses even the right password while the account waits', async () => {
+  it('refuses even the right password while the email waits at that address', async () => {
     await failFiveTimes(ADMIN.email);
     const right = await attempt(ADMIN);
     expect(right.status).toBe(429);
     expect(await db.prepare('SELECT COUNT(*) AS total FROM sessions').first<{ total: number }>()).toEqual({ total: 0 });
+  });
+
+  it('lets the same email sign in from another address while the first one waits', async () => {
+    await failFiveTimes(ADMIN.email, HOME);
+    expect((await attempt(ADMIN, HOME)).status).toBe(429);
+    expect((await attempt(ADMIN, ELSEWHERE)).status).toBe(200);
+  });
+
+  it('makes an address wait for any email after 20 failures within 15 minutes, with different emails', async () => {
+    for (let i = 0; i < 20; i += 1) {
+      expect((await attempt({ email: `guess${i}@example.com`, password: 'x' }, HOME)).status).toBe(401);
+    }
+    const fresh = await attempt({ email: 'another@example.com', password: 'x' }, HOME);
+    expect(fresh.status).toBe(429);
+    expect(fresh.error).toMatch(/wait 15 minutes/i);
+    expect((await attempt(READER, HOME)).status).toBe(429);
+    // Another address is not touched by the cap.
+    expect((await attempt(READER, ELSEWHERE)).status).toBe(200);
+  });
+
+  it('does not make an address wait after 19 failures with different emails', async () => {
+    for (let i = 0; i < 19; i += 1) await attempt({ email: `guess${i}@example.com`, password: 'x' }, HOME);
+    expect((await attempt(READER, HOME)).status).toBe(200);
+  });
+
+  it('lets the address sign in again once its wait ends', async () => {
+    for (let i = 0; i < 20; i += 1) await attempt({ email: `guess${i}@example.com`, password: 'x' }, HOME);
+    vi.setSystemTime(Date.now() + 14 * MINUTE);
+    expect((await attempt(READER, HOME)).status).toBe(429);
+    vi.setSystemTime(Date.now() + 1 * MINUTE + 1000);
+    expect((await attempt(READER, HOME)).status).toBe(200);
   });
 
   it('accepts the right password once the wait ends, and clears the count', async () => {
@@ -161,7 +199,7 @@ describe('the limit on failed sign-ins', () => {
     expect(unknown.status).toBe(429);
   });
 
-  it('counts only failures within 15 minutes, and only for that account', async () => {
+  it('counts only failures within 15 minutes, and only for that email', async () => {
     for (let i = 0; i < 4; i += 1) await attempt(WRONG);
     vi.setSystemTime(Date.now() + 16 * MINUTE);
     expect((await attempt(WRONG)).status).toBe(401);
@@ -169,13 +207,69 @@ describe('the limit on failed sign-ins', () => {
     expect((await attempt(ADMIN)).status).toBe(200);
   });
 
-  it('keeps the attempts in D1', async () => {
+  it('counts a request without a network address under one fixed address', async () => {
+    for (let i = 0; i < 5; i += 1) {
+      const res = await loginPost(context(db, loginRequest(WRONG)));
+      expect(res.status).toBe(401);
+    }
+    expect((await loginPost(context(db, loginRequest(ADMIN)))).status).toBe(429);
+  });
+
+  it('keeps the attempts in D1, per email and address', async () => {
     await attempt(WRONG);
     const row = await db
-      .prepare('SELECT failures FROM sign_in_attempts WHERE email = ?')
-      .bind(ADMIN.email)
+      .prepare('SELECT failures FROM sign_in_attempts WHERE address = ? AND email = ?')
+      .bind(HOME, ADMIN.email)
       .first<{ failures: number }>();
     expect(row?.failures).toBe(1);
+  });
+});
+
+// R310: an email with no account does the same password work as a wrong password, so the time does not tell.
+describe('the time of a refused sign-in', () => {
+  let db: SqliteD1Database;
+  beforeEach(() => {
+    db = createTestDb({ seed: true });
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
+    db.close();
+  });
+
+  async function pbkdf2Work(body: { email: string; password: string }): Promise<unknown[]> {
+    const derive = vi.spyOn(crypto.subtle, 'deriveBits');
+    const res = await loginPost(context(db, loginRequest(body)));
+    expect(res.status).toBe(401);
+    const calls = derive.mock.calls.map(([params, , bits]) => {
+      const { name, iterations, hash } = params as Pbkdf2Params;
+      return { name, iterations, hash, bits };
+    });
+    derive.mockRestore();
+    return calls;
+  }
+
+  it('computes the same PBKDF2 hash for an unknown email as for a wrong password', async () => {
+    const wrong = await pbkdf2Work({ email: ADMIN.email, password: 'not-the-password' });
+    const unknown = await pbkdf2Work({ email: 'nobody@example.com', password: 'not-the-password' });
+    expect(wrong).toEqual([{ name: 'PBKDF2', iterations: 100_000, hash: 'SHA-256', bits: 256 }]);
+    expect(unknown).toEqual(wrong);
+  });
+
+  it('answers an unknown email in a time comparable to a wrong password', async () => {
+    async function timed(body: { email: string; password: string }): Promise<number> {
+      const runs: number[] = [];
+      for (let i = 0; i < 3; i += 1) {
+        const start = performance.now();
+        await loginPost(context(db, loginRequest(body, 'http://localhost', `192.0.2.${i}`)));
+        runs.push(performance.now() - start);
+      }
+      return runs.sort((a, b) => a - b)[1] ?? 0;
+    }
+    const wrong = await timed({ email: ADMIN.email, password: 'not-the-password' });
+    const unknown = await timed({ email: 'nobody@example.com', password: 'not-the-password' });
+    // A generous margin: without the same work, the unknown email answers many times faster.
+    expect(unknown).toBeGreaterThan(wrong / 4);
+    expect(unknown).toBeLessThan(wrong * 4);
   });
 });
 

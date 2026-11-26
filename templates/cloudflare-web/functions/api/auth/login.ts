@@ -1,7 +1,7 @@
 import type { PagesFunction, UserRole } from '../../_lib/types.ts';
-import { verifyPassword } from '../../_lib/crypto.ts';
+import { spendPasswordWork, verifyPassword } from '../../_lib/crypto.ts';
 import { buildSessionCookie, createSession, jsonResponse } from '../../_lib/session.ts';
-import { clearFailures, isWaiting, recordFailure } from '../../_lib/sign-in-limit.ts';
+import { clearFailures, isWaiting, networkAddress, recordFailure } from '../../_lib/sign-in-limit.ts';
 
 interface LoginBody {
   email?: unknown;
@@ -19,8 +19,9 @@ interface UserRow {
 
 // The same answer for an unknown email and a wrong password, so the sign-in does not tell which accounts exist.
 const WRONG_CREDENTIALS = 'The email or the password is not correct.';
-// After 5 failures within 15 minutes (R307); the same for every email typed, known or not.
-const MUST_WAIT = 'Too many failed sign-ins for this email. Wait 15 minutes and try again.';
+// After 5 failures for one email from one address, or 20 from one address whatever the email (R310); the same
+// for every email typed, known or not.
+const MUST_WAIT = 'Too many failed sign-ins. Wait 15 minutes and try again.';
 
 export const onRequestPost: PagesFunction = async (context) => {
   let body: LoginBody;
@@ -36,7 +37,8 @@ export const onRequestPost: PagesFunction = async (context) => {
     return jsonResponse({ error: 'Enter your email and your password.' }, 400);
   }
 
-  if (await isWaiting(context.env.DB, email)) {
+  const address = networkAddress(context.request);
+  if (await isWaiting(context.env.DB, address, email)) {
     return jsonResponse({ error: MUST_WAIT }, 429);
   }
 
@@ -45,12 +47,19 @@ export const onRequestPost: PagesFunction = async (context) => {
   )
     .bind(email)
     .first<UserRow>();
-  if (!user || user.active !== 1 || !(await verifyPassword(typedPassword, user.password_hash))) {
-    await recordFailure(context.env.DB, email);
+  // An email with no account, or a disabled one, still computes a password hash, so it answers in the same time.
+  let passwordIsRight = false;
+  if (user && user.active === 1) {
+    passwordIsRight = await verifyPassword(typedPassword, user.password_hash);
+  } else {
+    await spendPasswordWork(typedPassword);
+  }
+  if (!user || !passwordIsRight) {
+    await recordFailure(context.env.DB, address, email);
     return jsonResponse({ error: WRONG_CREDENTIALS }, 401);
   }
 
-  await clearFailures(context.env.DB, email);
+  await clearFailures(context.env.DB, address, email);
 
   const { token } = await createSession(context.env.DB, user.id);
   return jsonResponse(

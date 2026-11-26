@@ -5,6 +5,6 @@
   "profiles": {
     "empty": "A truly empty project with the general standards only; the first change decides what to build and with what.",
     "dotnet-react": "A .NET 10 API and a React 19 + TypeScript web page with Tailwind and shadcn/ui, each with its first test, and the .NET + React standards.",
-    "cloudflare-web": "A web application on Cloudflare Pages: a React 19 + TypeScript page with Tailwind, Pages Functions with a sign-in and two roles, a D1 database with its first migration and a sample seed, its Vitest tests, and the Cloudflare standards; deployment is left to the project."
+    "cloudflare-web": "A web application on Cloudflare Pages: a React 19 + TypeScript page with Tailwind, Pages Functions with a sign-in and two roles, a D1 database with its migrations and a sample seed, its Vitest tests, and the Cloudflare standards; deployment is left to the project."
   }
 }

@@ -62,6 +62,14 @@ export async function verifyPassword(password: string, storedHash: string): Prom
   return constantTimeEqual(derived, expected);
 }
 
+// A fixed hash with the same iterations as a real one, of a password nobody uses: an email with no account is
+// checked against it, so it costs the same work as a wrong password and the time does not tell (R310).
+const NO_ACCOUNT_HASH = `pbkdf2_sha256$${PBKDF2_ITERATIONS}$d1a5e6b0c4f2973e8b1d0a6c5f4e3b2a$6966252eed9f090747736512666fdc492f9034f519a3534143a37b0aaafc06fc`;
+
+export async function spendPasswordWork(password: string): Promise<void> {
+  await verifyPassword(password, NO_ACCOUNT_HASH);
+}
+
 export function generateSessionToken(): string {
   const bytes = new Uint8Array(32);
   crypto.getRandomValues(bytes);

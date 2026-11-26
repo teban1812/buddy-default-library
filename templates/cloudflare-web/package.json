@@ -12,8 +12,8 @@
     "test": "vitest run",
     "db:migrate:local": "wrangler d1 migrations apply buddy-app-db --local",
     "db:seed:local": "wrangler d1 execute buddy-app-db --local --file=seeds/seed.sql",
-    "validate": "npm run typecheck && npm run build && npm run test && node --test scripts/scan-personal-data.test.mjs scripts/check-prerequisites.test.mjs",
-    "scan": "node scripts/scan-personal-data.mjs && semgrep scan --config .semgrep --error --metrics off --exclude node_modules --exclude dist --exclude .wrangler ."
+    "validate": "npm run typecheck && npm run build && npm run test && node --test scripts/scan-personal-data.test.mjs scripts/check-prerequisites.test.mjs scripts/scan-semgrep.test.mjs",
+    "scan": "node scripts/scan-personal-data.mjs && node scripts/scan-semgrep.mjs --config .semgrep --error --metrics off --exclude node_modules --exclude dist --exclude .wrangler ."
   },
   "dependencies": {
     "react": "^19.3.1",

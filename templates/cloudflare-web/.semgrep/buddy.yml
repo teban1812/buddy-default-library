@@ -1,5 +1,6 @@
 # The project's own Semgrep rules. They check standards that say "checked by a program".
-# Born with the project from Buddy's default library; the project's Standards Owner may change them.
+# They follow Buddy's default library: a newer version may add or change rules here (buddy library update); a file the project edited is kept
+# unless its owner takes the library's version. The project's Standards Owner may add files of its own.
 rules:
   - id: nothing-fails-silently-typescript
     languages: [typescript, javascript]

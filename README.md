@@ -7,8 +7,8 @@ The standards and base applications a project starts from when it is created wit
 ```text
 library.json      the library's name, contract, default profile and profiles
 standards/
-  general/        the rules every project follows, whatever its stack (evergreen): standards.md and design.md, and the quality goals proposed to every project (quality-goals.md)
-  <profile>/      the rules of one stack (born with the project), and the quality goals proposed for it (quality-goals.md, evergreen)
+  general/        the rules every project follows, whatever its stack (evergreen): standards.md and design.md, the Definition of Ready and of Done (definition-of-ready.md, definition-of-done.md), and the quality goals proposed to every project (quality-goals.md)
+  <profile>/      the rules of one stack (born with the project), its own rows of the Definition of Done (definition-of-done.md, evergreen) and the quality goals proposed for it (quality-goals.md, evergreen)
 templates/
   <profile>/      the application a new project starts from
 themes/           the colour themes the owner chooses from (contract 2; see Themes below)
@@ -37,6 +37,8 @@ Each profile's prerequisites, what a machine needs to build and test it, are in 
 A new profile adds a folder under `standards/` (when it has rules of its own) and under `templates/`, and a line in `library.json`, which is what Buddy shows the owner when they choose a profile.
 
 The library proposes default **quality goals** in the same format as its rules, a table with an id, the goal, its target (a number or a list) and how it is measured: `standards/general/quality-goals.md` for every project (QG-1 data kept 5 years, QG-2 WCAG 2.2 AA), and `standards/<profile>/quality-goals.md` for `dotnet-react` (QG-DR-1 to QG-DR-3) and `cloudflare-web` (QG-CF-1 to QG-CF-3): up to 50 people at the same time, 95 % of pages in under 2 seconds, at most 4 hours down a month (outside office hours for `dotnet-react`). The goals of the chosen profile add to the general ones. They arrive with the standards but are proposals, not rules: Buddy proposes those the project's risk justifies, adjusted to it, and the owner confirms them into the project's business context, each citing its id, where UAT reads what it measures.
+
+The library declares a **Definition of Ready** and a **Definition of Done** in the same table as its rules (an id, the zone, the rule, how it is checked, what it prevents): `standards/general/definition-of-ready.md` (DOR-1 to DOR-5: criteria in business words and what the change leaves out, how each criterion is tried, an example with numbers for money, dates or calculations, no blocking question open and the assumptions announced, where each criterion's data comes from) and `standards/general/definition-of-done.md` (DOD-1 to DOD-5: each criterion met and each key example tested, every test passing and none weakened, the security check clean, the stale documentation updated, screens accessible and following the prototype). `cloudflare-web` and `dotnet-react` add a row of their own to the Definition of Done (DOD-CF-1, DOD-DR-1: an axe test for each screen the change adds or changes). Buddy weighs a change against the Definition of Ready before he makes it ready, and names each rule it does not meet; the independent reviewer checks the Definition of Done at the checkpoint and reports each rule not met as a finding. Neither is confirmed by a Standards Owner yet.
 
 ## Themes
 

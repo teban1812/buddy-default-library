@@ -1,6 +1,7 @@
 import type { PagesFunction, UserRole } from '../../_lib/types.ts';
 import { verifyPassword } from '../../_lib/crypto.ts';
 import { buildSessionCookie, createSession, jsonResponse } from '../../_lib/session.ts';
+import { clearFailures, isWaiting, recordFailure } from '../../_lib/sign-in-limit.ts';
 
 interface LoginBody {
   email?: unknown;
@@ -18,6 +19,8 @@ interface UserRow {
 
 // The same answer for an unknown email and a wrong password, so the sign-in does not tell which accounts exist.
 const WRONG_CREDENTIALS = 'The email or the password is not correct.';
+// After 5 failures within 15 minutes (R307); the same for every email typed, known or not.
+const MUST_WAIT = 'Too many failed sign-ins for this email. Wait 15 minutes and try again.';
 
 export const onRequestPost: PagesFunction = async (context) => {
   let body: LoginBody;
@@ -33,14 +36,21 @@ export const onRequestPost: PagesFunction = async (context) => {
     return jsonResponse({ error: 'Enter your email and your password.' }, 400);
   }
 
+  if (await isWaiting(context.env.DB, email)) {
+    return jsonResponse({ error: MUST_WAIT }, 429);
+  }
+
   const user = await context.env.DB.prepare(
     'SELECT id, email, name, role, password_hash, active FROM users WHERE lower(email) = ?',
   )
     .bind(email)
     .first<UserRow>();
   if (!user || user.active !== 1 || !(await verifyPassword(typedPassword, user.password_hash))) {
+    await recordFailure(context.env.DB, email);
     return jsonResponse({ error: WRONG_CREDENTIALS }, 401);
   }
+
+  await clearFailures(context.env.DB, email);
 
   const { token } = await createSession(context.env.DB, user.id);
   return jsonResponse(

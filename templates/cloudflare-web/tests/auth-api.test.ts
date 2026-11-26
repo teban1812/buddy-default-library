@@ -1,6 +1,6 @@
 // @vitest-environment node
 // The pattern every endpoint follows: the Function is called directly with a request and a D1 over node:sqlite.
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { onRequest as apiMiddleware } from '../functions/api/_middleware.ts';
 import { onRequestPost as loginPost } from '../functions/api/auth/login.ts';
 import { onRequestPost as logoutPost } from '../functions/api/auth/logout.ts';
@@ -97,6 +97,85 @@ describe('sign-in and the session', () => {
       headers: { Cookie: cookiePair(login.headers.get('Set-Cookie')) },
     });
     expect((await meGet(context(db, meRequest))).status).toBe(401);
+  });
+});
+
+// R307: 5 failed sign-ins for the same account within 15 minutes make that account's sign-in wait 15 minutes.
+describe('the limit on failed sign-ins', () => {
+  const MINUTE = 60 * 1000;
+  const WRONG = { email: ADMIN.email, password: 'not-the-password' };
+  let db: SqliteD1Database;
+  beforeEach(() => {
+    db = createTestDb({ seed: true });
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-11-26T10:00:00.000Z'));
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+    db.close();
+  });
+
+  async function attempt(body: { email: string; password: string }): Promise<{ status: number; error?: string }> {
+    const res = await loginPost(context(db, loginRequest(body)));
+    const payload = (await res.json()) as { error?: string };
+    return { status: res.status, error: payload.error };
+  }
+
+  async function failFiveTimes(email: string): Promise<void> {
+    for (let i = 0; i < 5; i += 1) {
+      const res = await attempt({ email, password: 'not-the-password' });
+      expect(res.status).toBe(401);
+    }
+  }
+
+  it('makes the sixth attempt within 15 minutes wait', async () => {
+    await failFiveTimes(ADMIN.email);
+    vi.setSystemTime(new Date('2026-11-26T10:14:00.000Z'));
+    const sixth = await attempt(WRONG);
+    expect(sixth.status).toBe(429);
+    expect(sixth.error).toMatch(/wait 15 minutes/i);
+  });
+
+  it('refuses even the right password while the account waits', async () => {
+    await failFiveTimes(ADMIN.email);
+    const right = await attempt(ADMIN);
+    expect(right.status).toBe(429);
+    expect(await db.prepare('SELECT COUNT(*) AS total FROM sessions').first<{ total: number }>()).toEqual({ total: 0 });
+  });
+
+  it('accepts the right password once the wait ends, and clears the count', async () => {
+    await failFiveTimes(ADMIN.email);
+    vi.setSystemTime(Date.now() + 15 * MINUTE + 1000);
+    expect((await attempt(ADMIN)).status).toBe(200);
+    // The count starts again from zero: four more failures do not make it wait.
+    for (let i = 0; i < 4; i += 1) expect((await attempt(WRONG)).status).toBe(401);
+    expect((await attempt(ADMIN)).status).toBe(200);
+  });
+
+  it('gives an unknown account the same answer, so the wait does not tell which accounts exist', async () => {
+    await failFiveTimes(ADMIN.email);
+    await failFiveTimes('nobody@example.com');
+    const known = await attempt(WRONG);
+    const unknown = await attempt({ email: 'nobody@example.com', password: 'x' });
+    expect(unknown).toEqual(known);
+    expect(unknown.status).toBe(429);
+  });
+
+  it('counts only failures within 15 minutes, and only for that account', async () => {
+    for (let i = 0; i < 4; i += 1) await attempt(WRONG);
+    vi.setSystemTime(Date.now() + 16 * MINUTE);
+    expect((await attempt(WRONG)).status).toBe(401);
+    expect((await attempt(READER)).status).toBe(200);
+    expect((await attempt(ADMIN)).status).toBe(200);
+  });
+
+  it('keeps the attempts in D1', async () => {
+    await attempt(WRONG);
+    const row = await db
+      .prepare('SELECT failures FROM sign_in_attempts WHERE email = ?')
+      .bind(ADMIN.email)
+      .first<{ failures: number }>();
+    expect(row?.failures).toBe(1);
   });
 });
 

@@ -15,12 +15,12 @@ describe('the D1 schema and the seed', () => {
     for (const name of files) expect(name).toMatch(/^\d{4}_[a-z0-9_]+\.sql$/);
   });
 
-  it('creates the tables the sign-in needs', async () => {
+  it('creates the tables the sign-in and its limit need', async () => {
     db = createTestDb();
     const { results } = await db
       .prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name")
       .all<{ name: string }>();
-    expect(results.map((r) => r.name)).toEqual(expect.arrayContaining(['sessions', 'users']));
+    expect(results.map((r) => r.name)).toEqual(expect.arrayContaining(['sessions', 'sign_in_attempts', 'users']));
   });
 
   it('seeds one account per role, with hashed passwords and no broken reference', async () => {

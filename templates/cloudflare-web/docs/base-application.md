@@ -26,13 +26,14 @@ A web application for Cloudflare Pages: a React 19 + Vite + TypeScript page (`sr
 
 - Node.js 24 or later (with `node:sqlite`) and npm.
 - Wrangler, Cloudflare's command line, comes with the project as a development dependency; no global install and no Cloudflare account are needed to develop and test.
-- Semgrep and gitleaks, for the project's scans. Each tool, with the command that checks it, its minimum version and how to install it on Windows and on Mac, is in `docs/standards/cloudflare-web/prerequisites.md`.
+- Semgrep and gitleaks, for the project's scans. Each tool, with the command that checks it, its minimum version and how to install it on Windows and on Mac, is in `docs/standards/cloudflare-web/prerequisites.md`. `npm run prerequisites` checks them on this machine and names each tool missing or too old with the command that installs it here (winget on Windows, Homebrew on Mac); `npm run prerequisites -- --install` offers each install, one at a time, and runs it only after your yes (never in CI). `npm run setup` runs the check first and stops when something is missing.
 
 ## Setup and validation
 
 ```sh
-npm run setup      # installs the dependencies from the lock file (npm ci) and the check before each commit
-npm run validate   # type-checks, builds the page and runs every test, the personal-data scan's among them
+npm run prerequisites  # checks this machine has the tools in docs/standards/cloudflare-web/prerequisites.md
+npm run setup      # checks the prerequisites, then installs the dependencies from the lock file (npm ci) and the check before each commit
+npm run validate   # type-checks, builds the page and runs every test, those of the personal-data scan and the prerequisites check among them
 npm run scan       # the personal-data scan, then the project's Semgrep rules, locally
 ```
 

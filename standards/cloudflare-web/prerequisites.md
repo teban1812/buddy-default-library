@@ -8,7 +8,7 @@ What a machine needs to build, run and test a project of the Cloudflare web prof
 
 Wrangler, Cloudflare's command line, is not here: it comes with the project as a development dependency, pinned by its lock file (STK-3), and no Cloudflare account is needed until the project decides to publish (OPS-1).
 
-Each row can be read by a program: "How to check it" is one command that prints the version, and "Minimum version" is a plain number, the lowest version that prints there and builds the project. The Windows column is a winget id (`winget install --id <id> -e`) and the Mac column a Homebrew formula or cask (`brew install <name>`, `brew install --cask <name>`); "none" says the tool has no package there and how to install it by hand.
+Each row is read by a program, the template's `scripts/check-prerequisites.mjs` (`npm run prerequisites`, and first in `npm run setup`): "How to check it" is one command that prints the version, and "Minimum version" is a plain number, the lowest version that prints there and builds the project; the columns are found by their names. The Windows column is a winget id (`winget install --id <id> -e`) and the Mac column a Homebrew formula or cask (`brew install <name>`, `brew install --cask <name>`); "none" says the tool has no package there and how to install it by hand.
 
 | Tool | How to check it | Minimum version | Windows (winget id) | Mac (Homebrew) | Needed for |
 | :-- | :-- | :-- | :-- | :-- | :-- |

@@ -9,13 +9,14 @@ and a React + Vite + TypeScript web app (`web/`) tested with Vitest and Testing 
 
 - .NET SDK 10
 - Node.js 24 and npm
-- Semgrep and gitleaks, for the project's scans. Each tool, with the command that checks it, its minimum version and how to install it on Windows and on Mac, is in `docs/standards/dotnet-react/prerequisites.md`.
+- Semgrep and gitleaks, for the project's scans. Each tool, with the command that checks it, its minimum version and how to install it on Windows and on Mac, is in `docs/standards/dotnet-react/prerequisites.md`. `npm run prerequisites` checks them on this machine and names each tool missing or too old with the command that installs it here (winget on Windows, Homebrew on Mac); `npm run prerequisites -- --install` offers each install, one at a time, and runs it only after your yes (never in CI). `npm run setup` runs the check first and stops when something is missing.
 
 ## Setup and validation
 
 ```sh
-npm run setup      # installs the web dependencies (npm ci in web/) and the check before each commit
-npm run validate   # runs the .NET tests (the architecture rules among them), the web tests and the personal-data scan's tests
+npm run prerequisites  # checks this machine has the tools in docs/standards/dotnet-react/prerequisites.md
+npm run setup      # checks the prerequisites, then installs the web dependencies (npm ci in web/) and the check before each commit
+npm run validate   # runs the .NET tests (the architecture rules among them), the web tests and the tests of the personal-data scan and the prerequisites check
 npm run scan       # the personal-data scan, then the project's Semgrep rules, locally
 ```
 

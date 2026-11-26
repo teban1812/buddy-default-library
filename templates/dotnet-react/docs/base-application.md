@@ -2,7 +2,7 @@
 
 What the project was born with, from the default library's profile dotnet-react. The project's own README says what it is for.
 
-A .NET 10 minimal API (`src/BuddyApp.Api`) with xUnit tests (`tests/BuddyApp.Api.Tests`)
+A .NET 10 minimal API (`src/BuddyApp.Api`) with xUnit tests (`tests/BuddyApp.Api.Tests`), which also test its architecture rules,
 and a React + Vite + TypeScript web app (`web/`) tested with Vitest and Testing Library.
 
 ## Requirements
@@ -14,7 +14,7 @@ and a React + Vite + TypeScript web app (`web/`) tested with Vitest and Testing 
 
 ```sh
 npm run setup      # installs the web dependencies (npm ci in web/) and the check before each commit
-npm run validate   # runs the .NET tests, the web tests and the personal-data scan's tests
+npm run validate   # runs the .NET tests (the architecture rules among them), the web tests and the personal-data scan's tests
 npm run scan       # the personal-data scan, then the project's Semgrep rules, locally
 ```
 
@@ -31,6 +31,25 @@ change to the file is refused again until it is approved again:
 node scripts/scan-personal-data.mjs --allow tests/BuddyApp.Api.Tests/<file> --reason "<why it is allowed>"
 git add .personal-data-allow.json tests/BuddyApp.Api.Tests/<file>
 ```
+
+## Architecture rules
+
+The architecture rules are tests (TST-3 in `docs/standards/`), run with the other .NET tests in `npm run validate`:
+
+- `tests/BuddyApp.Api.Tests/EndpointSecurityTests.cs` starts the application and reads every endpoint it serves. An endpoint
+  that answers without permission must be on the approved list at the top of that file (only `GET /api/health` today);
+  any other fails the test, named with its method and route. It also checks that an unauthenticated call outside the list
+  gets 401 and that every response carries the security headers.
+- `tests/BuddyApp.Api.Tests/ArchitectureTests.cs` reads the compiled code with [ArchUnitNET](https://github.com/TNG/ArchUnitNET)
+  (Apache 2.0, a test dependency only, pinned to 0.13.5): the API must not depend on the tests or on test libraries
+  (xUnit, Bogus, the test host), and no migration may load data (`InsertData`, `UpdateData`, `DeleteData`, `Sql`). The
+  template has no Entity Framework yet, so the migration rule has nothing to check until the project has migrations.
+
+What the tests guard is in `src/BuddyApp.Api/Program.cs`: every endpoint asks for a signed-in user unless it says
+`AllowAnonymous()` (a fallback authorization policy), the session is a cookie (`HttpOnly`, `Secure`, `SameSite`) and an
+unauthenticated call gets 401 rather than a redirect, and a small middleware sets the security headers. There is no sign-in
+yet: it arrives with the first feature that needs one (SEC-5). A new endpoint is protected by default; to open one, add
+`AllowAnonymous()` and its line to the approved list in the same change.
 
 ## Test data
 

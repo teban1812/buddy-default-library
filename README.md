@@ -5,10 +5,10 @@ The standards and base applications a project starts from when it is created wit
 ## Layout
 
 ```text
-library.json      the library's name, contract, default profile, profiles and their default quality goals
+library.json      the library's name, contract, default profile and profiles
 standards/
-  general/        the rules every project follows, whatever its stack (evergreen): standards.md and design.md
-  <profile>/      the rules of one stack (born with the project)
+  general/        the rules every project follows, whatever its stack (evergreen): standards.md and design.md, and the quality goals proposed to every project (quality-goals.md)
+  <profile>/      the rules of one stack (born with the project), and the quality goals proposed for it (quality-goals.md, evergreen)
 templates/
   <profile>/      the application a new project starts from
 themes/           the colour themes the owner chooses from (contract 2; see Themes below)
@@ -36,7 +36,7 @@ Each profile's prerequisites, what a machine needs to build and test it, are in 
 
 A new profile adds a folder under `standards/` (when it has rules of its own) and under `templates/`, and a line in `library.json`, which is what Buddy shows the owner when they choose a profile.
 
-`library.json` also proposes default **quality goals** for `dotnet-react` and `cloudflare-web` (`quality_goals`, contract 2, optional): up to 50 people at the same time, 95 % of pages in under 2 seconds, at most 4 hours down a month (outside office hours for `dotnet-react`), data kept 5 years, and WCAG 2.2 AA. They are a starting point, never copied: Buddy proposes those the project's risk justifies, adjusted to it, and the owner confirms them into the project's business context, where UAT reads what it measures. An older Buddy ignores the key.
+The library proposes default **quality goals** in the same format as its rules, a table with an id, the goal, its target (a number or a list) and how it is measured: `standards/general/quality-goals.md` for every project (QG-1 data kept 5 years, QG-2 WCAG 2.2 AA), and `standards/<profile>/quality-goals.md` for `dotnet-react` (QG-DR-1 to QG-DR-3) and `cloudflare-web` (QG-CF-1 to QG-CF-3): up to 50 people at the same time, 95 % of pages in under 2 seconds, at most 4 hours down a month (outside office hours for `dotnet-react`). The goals of the chosen profile add to the general ones. They arrive with the standards but are proposals, not rules: Buddy proposes those the project's risk justifies, adjusted to it, and the owner confirms them into the project's business context, each citing its id, where UAT reads what it measures.
 
 ## Themes
 
@@ -82,4 +82,4 @@ This library and Buddy publish their versions independently: Buddy reads a libra
 
 What Buddy assumes of a library, this one or an enterprise one, is written once, in Buddy's repository: [the library guide](https://github.com/teban1812/buddy/blob/main/core/LIBRARY-GUIDE.md) (`core/LIBRARY-GUIDE.md` in teban1812/buddy, also shipped with Buddy's plugin). It explains each part of a library (`library.json`, the standards and their open values, the templates, the questions, the steps with each template's prefill, the normative documents and the saved prompts), what Buddy does with each and what he refuses, with an example of each.
 
-A library says which contract it follows in its `library.json`. This library follows contract 2: its standards and templates, the themes and the default quality goals. Contract 2 adds the themes, the questions, the steps, the normative documents, the saved prompts and the default quality goals; a library that uses any of them declares `"contract": 2`.
+A library says which contract it follows in its `library.json`. This library follows contract 2: its standards (with its default quality goals) and templates, and the themes. Contract 2 adds the themes, the questions, the steps, the normative documents and the saved prompts; a library that uses any of them declares `"contract": 2`.

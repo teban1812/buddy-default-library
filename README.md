@@ -72,7 +72,7 @@ A project born from the `dotnet-react` profile applies its theme in `web/src/the
 
 Every standards file says its `lifecycle` in its front matter:
 - `birth`: copied once when the project is created; from then on it belongs to the project, and its Standards Owner may change it. A later version of this library does not touch it.
-- `evergreen`: owned by the library. The project keeps the version it was created from until its Standards Owner decides to move to a newer one, by copying the same folders from that version over its own (`docs/standards/ORIGIN.md` says how). Buddy does not yet tell a project when this library publishes a new version; that is planned. A project that must depart from an evergreen rule records that as its own decision.
+- `evergreen`: owned by the library. The project keeps the version it was created from until its Standards Owner decides to move to a newer one, by copying the same folders from that version over its own (`docs/standards/ORIGIN.md` says how). Buddy does not yet tell a project when this library publishes a new version; that is planned. The Product Owner may depart from any rule, even a `must` one, with an ADR that says why and names the rule; the board and the digest list each departure from a `must` rule for the Standards Owner to review afterwards.
 
 Each rule states its zone (`must`, `prefer`, `free`), how it is checked (a program first, then an independent reviewer, `declared` last) and the problem it prevents. A rule that cannot state these does not belong here.
 

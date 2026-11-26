@@ -6,7 +6,7 @@ set: dotnet-react
 
 The standards of the .NET + React profile, on top of the general ones. They are **born with the project**: copied once when the project is created, and from then on they belong to the project, whose Standards Owner may change them. A later version of the library does not touch them.
 
-The zones, checks and the treatment of existing code are those described in the general standards.
+The zones, checks, how the Product Owner departs from a rule and the treatment of existing code are those described in the general standards.
 
 Confirmed by the Standards Owner on 2026-11-01.
 

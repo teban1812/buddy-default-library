@@ -4,7 +4,7 @@ set: cloudflare-web
 ---
 # Definition of Done: web on Cloudflare
 
-The Definition of Done of this profile, on top of the general one (`standards/general/definition-of-done.md`), which says when it is checked and how a rule not met is reported. Like that one, it is evergreen and the library keeps it up to date.
+The Definition of Done of this profile, on top of the general one (`standards/general/definition-of-done.md`), which says when it is checked, how a rule not met is reported and how the Product Owner departs from one. Like that one, it is evergreen and the library keeps it up to date.
 
 Not yet confirmed by a Standards Owner.
 

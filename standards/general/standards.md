@@ -4,9 +4,9 @@ set: general
 ---
 # General standards
 
-The standards every project built with Buddy follows, whatever its stack. They are **evergreen**: the library owns them, the project keeps the version it pinned, and when the library publishes a new version the project is told what changed and its Standards Owner decides whether to move to it. A project that must depart from one records that as its own decision.
+The standards every project built with Buddy follows, whatever its stack. They are **evergreen**: the library owns them, the project keeps the version it pinned, and when the library publishes a new version the project is told what changed and its Standards Owner decides whether to move to it.
 
-Each rule says how much freedom it leaves (`must` is fixed and a deviation needs the Standards Owner's decision; `prefer` is the default and a deviation is recorded as a decision; `free` is the builder's choice), how it is checked (a program first, then the independent reviewer, `declared` last) and the problem it prevents. A rule that cannot say these does not belong here. In an existing project, the rules bind the code a change writes; code that is not touched is not forced to follow them.
+Each rule says how much freedom it leaves (`must` is fixed unless the Product Owner departs from it with an ADR that says why and names the rule, and the board and the digest list each such departure for the Standards Owner to review afterwards, without stopping the work; `prefer` is the default and a deviation is recorded as a decision; `free` is the builder's choice), how it is checked (a program first, then the independent reviewer, `declared` last) and the problem it prevents. A rule that cannot say these does not belong here. In an existing project, the rules bind the code a change writes; code that is not touched is not forced to follow them.
 
 Confirmed by the Standards Owner on 2026-11-01 (PRP-1 and CRF-1 to CRF-3 added and confirmed the same day). PRP-1 keeps the work in proportion to the project's risk; the CRF rules are craft, not over-engineering: they name the kinds of failure an experienced builder suspects (the data, a change, a failure, the people), not a list of cases. A case seen again and again in a project may be promoted by its Standards Owner into a rule of that project or of an enterprise library.
 

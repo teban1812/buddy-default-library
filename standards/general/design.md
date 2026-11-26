@@ -4,7 +4,7 @@ set: general
 ---
 # Design standards
 
-The library's design rules, whatever the stack. They are **evergreen**, like the general standards: the library owns them and the project keeps the version it pinned. Dev builds to them, the independent reviewer checks them, the usability audit measures against them and discovery reads them before the wireframes, exactly as any other standard (`must` is fixed, `prefer` is the default, `free` is the builder's choice). A profile may add its own `design.md` for what is specific to its stack. The theme the owner chooses is a separate matter: these rules hold for whichever theme it is.
+The library's design rules, whatever the stack. They are **evergreen**, like the general standards: the library owns them and the project keeps the version it pinned. Dev builds to them, the independent reviewer checks them, the usability audit measures against them and discovery reads them before the wireframes, exactly as any other standard (`must` is fixed unless the Product Owner departs from it with an ADR, `prefer` is the default, `free` is the builder's choice). A profile may add its own `design.md` for what is specific to its stack. The theme the owner chooses is a separate matter: these rules hold for whichever theme it is.
 
 The accessibility rules follow WCAG 2.2 level AA; the criterion each one comes from is named in its row. A program checks what it can (axe, in the template's tests); the rest is the reviewer's, on the screen.
 

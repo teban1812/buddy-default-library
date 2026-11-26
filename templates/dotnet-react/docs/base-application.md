@@ -17,6 +17,14 @@ npm run setup      # installs the web dependencies (npm ci in web/)
 npm run validate   # runs the .NET tests, then the web tests
 ```
 
+## Test data
+
+Test data is invented and the same on every run (QLT-4 in `docs/standards/`). In the .NET tests it comes from
+`tests/BuddyApp.Api.Tests/SampleData.cs`, a builder on [Bogus](https://github.com/bchavez/Bogus) (MIT, a test
+dependency only) with a fixed seed; emails are on `example.com`. A test that needs data asks the builder for it, and
+a new kind of data gets its own method there with the same seed. `SampleDataTests.cs` fails if the seed stops giving
+the same data.
+
 `validate` builds the .NET projects into `.artifacts/validate/`, apart from their `bin/` and `obj/`, so it runs
 while the API is up with `dotnet run`.
 

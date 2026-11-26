@@ -19,6 +19,7 @@ A web application for Cloudflare Pages: a React 19 + Vite + TypeScript page (`sr
 - **An endpoint** is a file under `functions/api/` exporting `onRequestGet`, `onRequestPost` and so on; the signed-in user is in `context.data.user`. Its test calls the function directly with a `Request` and `createTestDb()`, as `tests/auth-api.test.ts` does.
 - **SQL** always uses `?` placeholders and `.bind(...)`; the project's Semgrep rule refuses a query built from text.
 - **A table** arrives in a new numbered migration (`migrations/0004_<what>.sql` and onwards); a migration already applied is never edited. The tests apply every migration in order.
+- **Test data** is invented and the same on every run (QLT-4): `tests/helpers/test-data.ts` holds the seed's sample accounts and a small seeded generator (`samplePeople`, no extra dependency) for the invented people a test needs, on `example.com`; a new kind of data gets its own function there over the same seed. `tests/test-data.test.ts` fails if the seed stops giving the same data, and proves `seeds/seed.sql` holds exactly the sample accounts.
 - **The theme** lives in `src/theme.css` (born as `neutral`); `src/index.css` maps its variables to Tailwind. To change the theme, replace the content of `src/theme.css` with one from `docs/design/themes/`.
 
 ## Requirements

@@ -7,10 +7,13 @@ import { onRequestPost as logoutPost } from '../functions/api/auth/logout.ts';
 import { onRequestGet as meGet } from '../functions/api/auth/me.ts';
 import type { AuthUser, PagesContext } from '../functions/_lib/types.ts';
 import { createTestDb, type SqliteD1Database } from './helpers/d1-sqlite.ts';
+import { SAMPLE_ACCOUNTS, samplePeople } from './helpers/test-data.ts';
 
-// The seed's sample accounts (seeds/seed.sql, docs/base-application.md).
-const ADMIN = { email: 'admin@example.com', password: 'local-admin-2026' };
-const READER = { email: 'reader@example.com', password: 'local-reader-2026' };
+// The seed's sample accounts (seeds/seed.sql, docs/base-application.md), and invented people with no account,
+// the same on every run (tests/helpers/test-data.ts).
+const ADMIN = { email: SAMPLE_ACCOUNTS.admin.email, password: SAMPLE_ACCOUNTS.admin.password };
+const READER = { email: SAMPLE_ACCOUNTS.reader.email, password: SAMPLE_ACCOUNTS.reader.password };
+const [NOBODY, ANOTHER, ...GUESSES] = samplePeople(22).map((p) => p.email);
 
 function context(db: SqliteD1Database, request: Request): PagesContext<{ user?: AuthUser }> {
   return {
@@ -53,7 +56,7 @@ describe('sign-in and the session', () => {
 
   it('refuses a wrong password and an unknown email with the same 401', async () => {
     const wrong = await loginPost(context(db, loginRequest({ email: ADMIN.email, password: 'not-the-password' })));
-    const unknown = await loginPost(context(db, loginRequest({ email: 'nobody@example.com', password: 'x' })));
+    const unknown = await loginPost(context(db, loginRequest({ email: NOBODY, password: 'x' })));
     expect(wrong.status).toBe(401);
     expect(unknown.status).toBe(401);
     expect(await wrong.json()).toEqual(await unknown.json());
@@ -158,9 +161,9 @@ describe('the limit on failed sign-ins', () => {
 
   it('makes an address wait for any email after 20 failures within 15 minutes, with different emails', async () => {
     for (let i = 0; i < 20; i += 1) {
-      expect((await attempt({ email: `guess${i}@example.com`, password: 'x' }, HOME)).status).toBe(401);
+      expect((await attempt({ email: GUESSES[i], password: 'x' }, HOME)).status).toBe(401);
     }
-    const fresh = await attempt({ email: 'another@example.com', password: 'x' }, HOME);
+    const fresh = await attempt({ email: ANOTHER, password: 'x' }, HOME);
     expect(fresh.status).toBe(429);
     expect(fresh.error).toMatch(/wait 15 minutes/i);
     expect((await attempt(READER, HOME)).status).toBe(429);
@@ -169,12 +172,12 @@ describe('the limit on failed sign-ins', () => {
   });
 
   it('does not make an address wait after 19 failures with different emails', async () => {
-    for (let i = 0; i < 19; i += 1) await attempt({ email: `guess${i}@example.com`, password: 'x' }, HOME);
+    for (let i = 0; i < 19; i += 1) await attempt({ email: GUESSES[i], password: 'x' }, HOME);
     expect((await attempt(READER, HOME)).status).toBe(200);
   });
 
   it('lets the address sign in again once its wait ends', async () => {
-    for (let i = 0; i < 20; i += 1) await attempt({ email: `guess${i}@example.com`, password: 'x' }, HOME);
+    for (let i = 0; i < 20; i += 1) await attempt({ email: GUESSES[i], password: 'x' }, HOME);
     vi.setSystemTime(Date.now() + 14 * MINUTE);
     expect((await attempt(READER, HOME)).status).toBe(429);
     vi.setSystemTime(Date.now() + 1 * MINUTE + 1000);
@@ -192,9 +195,9 @@ describe('the limit on failed sign-ins', () => {
 
   it('gives an unknown account the same answer, so the wait does not tell which accounts exist', async () => {
     await failFiveTimes(ADMIN.email);
-    await failFiveTimes('nobody@example.com');
+    await failFiveTimes(NOBODY);
     const known = await attempt(WRONG);
-    const unknown = await attempt({ email: 'nobody@example.com', password: 'x' });
+    const unknown = await attempt({ email: NOBODY, password: 'x' });
     expect(unknown).toEqual(known);
     expect(unknown.status).toBe(429);
   });
@@ -250,7 +253,7 @@ describe('the time of a refused sign-in', () => {
 
   it('computes the same PBKDF2 hash for an unknown email as for a wrong password', async () => {
     const wrong = await pbkdf2Work({ email: ADMIN.email, password: 'not-the-password' });
-    const unknown = await pbkdf2Work({ email: 'nobody@example.com', password: 'not-the-password' });
+    const unknown = await pbkdf2Work({ email: NOBODY, password: 'not-the-password' });
     expect(wrong).toEqual([{ name: 'PBKDF2', iterations: 100_000, hash: 'SHA-256', bits: 256 }]);
     expect(unknown).toEqual(wrong);
   });
@@ -266,7 +269,7 @@ describe('the time of a refused sign-in', () => {
       return runs.sort((a, b) => a - b)[1] ?? 0;
     }
     const wrong = await timed({ email: ADMIN.email, password: 'not-the-password' });
-    const unknown = await timed({ email: 'nobody@example.com', password: 'not-the-password' });
+    const unknown = await timed({ email: NOBODY, password: 'not-the-password' });
     // A generous margin: without the same work, the unknown email answers many times faster.
     expect(unknown).toBeGreaterThan(wrong / 4);
     expect(unknown).toBeLessThan(wrong * 4);

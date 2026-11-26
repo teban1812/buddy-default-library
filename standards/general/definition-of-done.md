@@ -12,6 +12,6 @@ Not yet confirmed by a Standards Owner.
 | :-- | :-- | :-- | :-- | :-- |
 | DOD-1 | must | Each acceptance criterion is met, and each key example in a criterion has its test. | reviewer, at the checkpoint | delivering a change that does not do what was accepted |
 | DOD-2 | must | All tests pass, and none was removed or weakened. | program: the checkpoint's validate and its scan; reviewer | a green build that hides a failure |
-| DOD-3 | must | The security check found nothing: no secrets and no personal data in the repository. | program: gitleaks, before each commit and in CI; reviewer | credentials or people's data leaked through git |
+| DOD-3 | must | The security check found nothing: no secrets and no personal data in the repository. | program: gitleaks (SEC-1) and the personal-data scan (SEC-8), before each commit and in CI; reviewer | credentials or people's data leaked through git |
 | DOD-4 | must | The documentation the change made stale is up to date in the same change. | reviewer, at the checkpoint | documentation that describes an application that no longer exists |
 | DOD-5 | must | If the change has screens, they pass the accessibility check and follow the prototype, or each departure is approved by the Product Owner. | program: the template's accessibility tests, where it has them; reviewer, against the prototype | screens some people cannot use, and screens that are not what the Product Owner saw |

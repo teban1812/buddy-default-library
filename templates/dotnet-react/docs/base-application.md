@@ -13,8 +13,23 @@ and a React + Vite + TypeScript web app (`web/`) tested with Vitest and Testing 
 ## Setup and validation
 
 ```sh
-npm run setup      # installs the web dependencies (npm ci in web/)
-npm run validate   # runs the .NET tests, then the web tests
+npm run setup      # installs the web dependencies (npm ci in web/) and the check before each commit
+npm run validate   # runs the .NET tests, the web tests and the personal-data scan's tests
+npm run scan       # the personal-data scan, then the project's Semgrep rules, locally
+```
+
+## Personal data
+
+No real person's data goes into the repository (SEC-8 in `docs/standards/`). `scripts/scan-personal-data.mjs` looks for emails
+outside the reserved domains (`example.com` and the like), phone numbers, national identity numbers (Costa Rica's cédula) and
+card numbers, and names each finding with its file and line. It runs in `npm run scan`, in the pipeline and before each commit
+(`npm run setup` makes git run `.githooks/pre-commit`, which scans what is staged). When a file must keep data that looks
+personal, approve the exception with its reason; it is recorded in `.personal-data-allow.json` with the file's hash, so a later
+change to the file is refused again until it is approved again:
+
+```sh
+node scripts/scan-personal-data.mjs --allow tests/BuddyApp.Api.Tests/<file> --reason "<why it is allowed>"
+git add .personal-data-allow.json tests/BuddyApp.Api.Tests/<file>
 ```
 
 ## Test data

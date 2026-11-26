@@ -30,9 +30,23 @@ A web application for Cloudflare Pages: a React 19 + Vite + TypeScript page (`sr
 ## Setup and validation
 
 ```sh
-npm run setup      # installs the dependencies from the lock file (npm ci)
-npm run validate   # type-checks, builds the page and runs every test
-npm run scan       # the project's Semgrep rules, locally
+npm run setup      # installs the dependencies from the lock file (npm ci) and the check before each commit
+npm run validate   # type-checks, builds the page and runs every test, the personal-data scan's among them
+npm run scan       # the personal-data scan, then the project's Semgrep rules, locally
+```
+
+## Personal data
+
+No real person's data goes into the repository (SEC-8 in `docs/standards/`). `scripts/scan-personal-data.mjs` looks for emails
+outside the reserved domains (`example.com` and the like), phone numbers, national identity numbers (Costa Rica's cédula) and
+card numbers, and names each finding with its file and line. It runs in `npm run scan`, in the pipeline and before each commit
+(`npm run setup` makes git run `.githooks/pre-commit`, which scans what is staged). When a file must keep data that looks
+personal, approve the exception with its reason; it is recorded in `.personal-data-allow.json` with the file's hash, so a later
+change to the file is refused again until it is approved again:
+
+```sh
+node scripts/scan-personal-data.mjs --allow tests/fixtures/<file> --reason "<why it is allowed>"
+git add .personal-data-allow.json tests/fixtures/<file>
 ```
 
 ## Run in development

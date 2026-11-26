@@ -14,6 +14,8 @@ jobs:
           node-version: 24
       - run: npm run setup
       - run: npm run validate
+      - name: personal data
+        run: node scripts/scan-personal-data.mjs
       - run: pipx install semgrep
       - run: semgrep scan --config .semgrep --config p/typescript --config p/react --config p/owasp-top-ten --error --metrics off --exclude node_modules --exclude dist --exclude .wrangler .
       - name: gitleaks

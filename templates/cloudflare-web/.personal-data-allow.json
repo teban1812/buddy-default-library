@@ -1,0 +1,4 @@
+{
+  "about": "Approved exceptions to the personal-data scan (standard SEC-8). Each covers one file as it is now: a change to it needs the exception approved again. Add one with: node scripts/scan-personal-data.mjs --allow <file> --reason \"<why it is allowed>\"",
+  "allow": []
+}

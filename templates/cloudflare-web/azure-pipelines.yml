@@ -16,6 +16,8 @@ steps:
     displayName: Setup
   - script: npm run validate
     displayName: Validate
+  - script: node scripts/scan-personal-data.mjs
+    displayName: Personal data
   - script: pipx install semgrep && semgrep scan --config .semgrep --config p/typescript --config p/react --config p/owasp-top-ten --error --metrics off --exclude node_modules --exclude dist --exclude .wrangler .
     displayName: Semgrep
   - script: |
